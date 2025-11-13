@@ -9,7 +9,10 @@ const fs = require('fs');
 const path = require('path');
 
 // 🔑 Destructure environment variables
-const { DISCORD_TOKEN, CLIENT_ID, GUILD_ID } = process.env;
+const { DISCORD_TOKEN, CLIENT_ID } = process.env;
+const GUILD_ID = process.env.GUILD_ID
+  ? process.env.GUILD_ID.split(',').map(id => id.trim())
+  : [];
 
 // 📝 Array to store command data
 const commands = [];
@@ -33,12 +36,14 @@ const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
 (async () => {
   try {
     console.log('🔄 Registering application (/) commands...');
-    
+
     // ⬆️ Register all commands for a specific guild
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands }
-    );
+    for (const guildId of GUILD_ID) {
+      await rest.put(
+        Routes.applicationGuildCommands(CLIENT_ID, guildId),
+        { body: commands }
+      );
+    }
 
     console.log('✅ Successfully registered!');
   } catch (error) {
