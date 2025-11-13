@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/bkt-cmyk/discord-bot/issues"
   },
-  "homepage": "https://github.com/bkt-cmyk/discord-bot#readme"
+  "homepage": "https://github.com/bkt-cmyk/discord-bot#readme",
+  "dependencies": {
+    "discord.js": "^14.24.2",
+    "dotenv": "^17.2.3"
+  }
 }
