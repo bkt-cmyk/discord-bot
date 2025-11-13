@@ -57,7 +57,7 @@ function createEmbed({
     note = 'NULL'
 }) {
     return new EmbedBuilder()
-        .setTitle(`> Stock Alert: ***${symbol}***`)
+        .setTitle(`> ## Stock Alert: ***${symbol}***`)
         .setDescription("--------------------------")
         .setColor(0x57f287) // ✅ Nice green tone for success/info
         .setThumbnail(thumbnailUrl)
