@@ -56,10 +56,10 @@ function createEmbed({
     smaWeek = 'NULL',
     note = 'NULL'
 }) {
-    return new EmbedBuilder()
+    const embed1 = new EmbedBuilder()
         .setTitle(`> Stock Alert: ***${symbol}***`)
-        .setDescription("--------------------------")
-        .setColor(0x57f287) // ✅ Nice green tone for success/info
+        .setDescription(`——————————`)
+        .setColor(0x57f287)
         .setThumbnail(thumbnailUrl)
         .addFields(
             // 💰 Current price section
@@ -71,7 +71,7 @@ function createEmbed({
 
             // 🎯 Support levels section
             {
-                name: '🎯 Support Levels',
+                name: '🎯 Support Level',
                 value: supportLevels.length > 0
                     ? `\`\`\`\n${supportLevels.map((v, i) => `ไม้ที่ ${i + 1} : ${v}`).join('\n')}\n\`\`\``
                     : '```ไม่มีข้อมูล```',
@@ -80,7 +80,7 @@ function createEmbed({
 
             // 📅 SMA (TWD)
             {
-                name: '📅 SMA (TWD)',
+                name: '📅 SMA (TFD)',
                 value: smaDay.length > 0
                     ? `\`\`\`\n${smaDay.map((v, i) => `${[50, 100, 200][i]}D`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
                     : '```ไม่มีข้อมูล```',
@@ -96,15 +96,17 @@ function createEmbed({
                 inline: false
             },
 
-            // 📝 Notes section
+            // 📝 Note section
             {
-                name: '📝 Notes',
+                name: '📝 Note',
                 value: note.length > 0 ? `\`\`\`\n${note[0]}\n\`\`\`` : '```ไม่มีข้อมูล```',
                 inline: false
             }
         )
-        .setFooter({ text: 'ข้อมูลจาก Google Sheets • Last Updated' })
+        .setFooter({ text: 'ข้อมูลจาก Google Sheets' })
         .setTimestamp();
+
+    return [embed1];
 }
 
 
@@ -136,7 +138,7 @@ module.exports = {
             .setDescription(`### ${symbol}\nThe requested stock information is currently unavailable.`)
             .addFields({
                 name: '▸ Possible Reasons',
-                value: '```Invalid symbol or ticker\nAPI rate limit reached\nRequest timeout (>10s)```',
+                value: '```・No stock in Google Sheet\n・Invalid symbol or ticker\n・API rate limit reached\n・Request timeout (>10s)```',
                 inline: false
             })
             .setColor(0xFF6B6B)
@@ -179,7 +181,8 @@ module.exports = {
             }
 
             // 💬 Send the embed to user
-            await interaction.editReply({ embeds: [embed] });
+            await interaction.editReply({ embeds: embed });
+            // await interaction.editReply({ embeds: [embed, embed] });
 
         } catch (error) {
             // ⚠️ Catch any fetch or timeout errors
