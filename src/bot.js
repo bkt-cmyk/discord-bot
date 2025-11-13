@@ -3,6 +3,9 @@
 // 🌟 Load environment variables from .env file
 require('dotenv').config();
 
+// 🔁 Run deploy-commands.js
+require('./server');
+
 // ⚡ Import necessary Discord.js classes
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
@@ -10,7 +13,7 @@ const { Client, Collection, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
-// 🔁 Run deploy-commands.js first to register slash commands
+// 🔁 Run server.js first to register slash commands
 require('./deploy-commands');
 
 // 🤖 Create a new Discord client instance with necessary intents
