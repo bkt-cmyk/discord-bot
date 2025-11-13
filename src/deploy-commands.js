@@ -39,10 +39,15 @@ const rest = new REST({ version: '10' }).setToken(DISCORD_TOKEN);
 
     // ⬆️ Register all commands for a specific guild
     for (const guildId of GUILD_ID) {
-      await rest.put(
-        Routes.applicationGuildCommands(CLIENT_ID, guildId),
-        { body: commands }
-      );
+      try {
+        await rest.put(
+          Routes.applicationGuildCommands(CLIENT_ID, guildId),
+          { body: commands }
+        );
+      }
+      catch (error) {
+        // console.error('❌ Error registering commands:', error);
+      }
     }
 
     console.log('✅ Successfully registered!');
