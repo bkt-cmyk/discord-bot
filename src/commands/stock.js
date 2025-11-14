@@ -135,7 +135,7 @@ module.exports = {
         // 🔴 Error embed (used for fallback)
         const errorEmbed = new EmbedBuilder()
             .setTitle('***Unable to Fetch Stock Data***')
-            .setDescription(`### ${symbol}\nThe requested stock information is currently unavailable.`)
+            .setDescription(`### > ${symbol}\nThe requested stock information is currently unavailable.`)
             .addFields({
                 name: '▸ Possible Reasons',
                 value: '```・No stock in Google Sheet\n・Invalid symbol or ticker\n・API rate limit reached\n・Request timeout (>10s)```',
@@ -191,3 +191,4 @@ module.exports = {
         }
     }
 };
+
