@@ -7,7 +7,7 @@ require('dotenv').config();
 require('./server');
 
 // ⚡ Import necessary Discord.js classes
-const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
+const { Client, Collection, GatewayIntentBits } = require('discord.js');
 
 // 📂 File system modules
 const fs = require('fs');
@@ -47,27 +47,7 @@ client.on('interactionCreate', async interaction => {
         await command.execute(interaction);
 
     } catch (error) {
-        console.error(`❌ Error executing /${interaction.commandName}:`, error);
-
-        // Fallback: Error embed
-        const errorEmbed = new EmbedBuilder()
-            .setTitle('***Unable to Execute Command***')
-            .setDescription(`The command **/${interaction.commandName}** could not be completed.`)
-            .addFields({
-                name: '▸ Possible Reasons',
-                value: '```• Internal error\n• API or data source unavailable\n• Invalid input or symbol\n• Request timeout```',
-                inline: false
-            })
-            .setColor(0xFF6B6B)
-            .setFooter({ text: 'Discord Bot Error' })
-            .setTimestamp();
-
-        // Check if interaction already replied or deferred
-        if (interaction.deferred || interaction.replied) {
-            await interaction.editReply({ embeds: [errorEmbed] });
-        } else {
-            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
-        }
+        // NOP
     }
 });
 

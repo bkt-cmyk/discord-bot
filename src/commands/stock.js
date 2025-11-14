@@ -18,22 +18,53 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const FETCH_TIMEOUT = 10000;
 
 /****************************************************************************************
- * ⌛ fetchWithTimeout(url, options, timeout)
+ * ⌛ fetchWithTimeout(url, options, timeout, retries)
+ * 
+ * Perform a fetch request with a timeout and optional retry mechanism.
+ * If the request exceeds the timeout, it will be aborted.
+ * If the request fails or response is not OK, it can retry a specified number of times.
+ * 
+ * @param {string} url - The URL to fetch.
+ * @param {object} options - Fetch options (method, headers, body, etc.).
+ * @param {number} timeout - Maximum time in milliseconds before aborting the request.
+ * @param {number} retries - Number of retry attempts on failure.
+ * @returns {Promise<Response>} - Returns a fetch Response object if successful.
+ * @throws {Error} - Throws an error if all attempts fail or timeout occurs.
  ****************************************************************************************/
-async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retries = 1) {
+    // Loop through attempts, including retries
+    for (let attempt = 1; attempt <= retries + 1; attempt++) {
+        // Create AbortController for timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    try {
-        const response = await fetch(url, { ...options, signal: controller.signal });
-        clearTimeout(timeoutId);
-        return response;
-    } catch (error) {
-        clearTimeout(timeoutId);
-        if (error.name === 'AbortError') throw new Error('Request timeout');
-        throw error;
+        try {
+            // Perform fetch with abort signal
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            clearTimeout(timeoutId); // Clear timeout if fetch succeeds
+
+            // Check if response is OK (status code 2xx)
+            if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+            }
+
+            // Return the successful response
+            return response;
+
+        } catch (error) {
+            clearTimeout(timeoutId); // Clear timeout on error
+
+            // If retries remain, wait 500ms and retry
+            if (attempt <= retries) {
+                await new Promise(res => setTimeout(res, timeout / 10));
+            } else {
+                // No retries left, throw the error
+                throw error;
+            }
+        }
     }
 }
+
 
 /****************************************************************************************
  * 🎨 createEmbed(data)
@@ -158,6 +189,8 @@ module.exports = {
             await interaction.editReply({ embeds: embedsToSend });
 
         } catch (error) {
+            // console.dir(error, { depth: null, colors: true });
+
             // Send fallback error
             await interaction.editReply({ embeds: [errorEmbed] });
         }
