@@ -68,7 +68,7 @@ function createEmbed({
             {
                 name: '🎯 Support Levels',
                 value: supportLevels.length > 0
-                    ? `\`\`\`\n${supportLevels.map((v, i) => `Level ${i + 1}: ${v}`).join('\n')}\n\`\`\``
+                    ? `\`\`\`\n${supportLevels.map((v, i) => `ไม้ที่ ${i + 1}: ${v}`).join('\n')}\n\`\`\``
                     : '```No data```',
                 inline: false
             },
