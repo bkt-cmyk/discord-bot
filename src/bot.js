@@ -3,58 +3,73 @@
 // 🌟 Load environment variables from .env file
 require('dotenv').config();
 
-// 🔁 Run deploy-commands.js
+// 🔁 Run deploy-commands.js (optional)
 require('./server');
 
 // ⚡ Import necessary Discord.js classes
-const { Client, Collection, GatewayIntentBits } = require('discord.js');
+const { Client, Collection, GatewayIntentBits, EmbedBuilder } = require('discord.js');
 
-// 📂 File system and path modules
+// 📂 File system modules
 const fs = require('fs');
 const path = require('path');
 
-// 🔁 Run server.js first to register slash commands
+// 🔁 Register slash commands
 require('./deploy-commands');
 
-// 🤖 Create a new Discord client instance with necessary intents
+// 🤖 Create Discord client with required intents
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-// 📝 Collection to store commands
+// 📝 Store commands here
 client.commands = new Collection();
 
-// 📦 Load all command files
+// 📦 Load all command files automatically
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
 
-// 🔁 Add each command to the client's collection
 for (const file of commandFiles) {
     const command = require(path.join(commandsPath, file));
     client.commands.set(command.data.name, command);
 }
 
-// ⚡ Ready event — fires when the bot is logged in and ready
+// ⚡ When bot is ready
 client.once('ready', () => {
     console.log(`🤖 Logged in as ${client.user.tag}`);
 });
 
-// 💬 Interaction handler for slash commands
+// 💬 Slash command handler (Best Practice)
 client.on('interactionCreate', async interaction => {
-    // ✅ Only handle chat input commands
     if (!interaction.isChatInputCommand()) return;
 
-    // 🔍 Get the corresponding command from collection
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
 
     try {
-        // 🚀 Execute the command
         await command.execute(interaction);
+
     } catch (error) {
-        // ❌ Log errors and reply to user
-        console.error('⚠️ Error executing command:', error);
-        await interaction.reply({ content: '❌ Error while executing command.', ephemeral: true });
+        console.error(`❌ Error executing /${interaction.commandName}:`, error);
+
+        // Fallback: Error embed
+        const errorEmbed = new EmbedBuilder()
+            .setTitle('***Unable to Execute Command***')
+            .setDescription(`The command **/${interaction.commandName}** could not be completed.`)
+            .addFields({
+                name: '▸ Possible Reasons',
+                value: '```• Internal error\n• API or data source unavailable\n• Invalid input or symbol\n• Request timeout```',
+                inline: false
+            })
+            .setColor(0xFF6B6B)
+            .setFooter({ text: 'Discord Bot Error' })
+            .setTimestamp();
+
+        // Check if interaction already replied or deferred
+        if (interaction.deferred || interaction.replied) {
+            await interaction.editReply({ embeds: [errorEmbed] });
+        } else {
+            await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        }
     }
 });
 
-// 🔑 Login to Discord with bot token
+// 🔑 Login to Discord
 client.login(process.env.DISCORD_TOKEN);
