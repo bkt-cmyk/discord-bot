@@ -31,7 +31,7 @@ const FETCH_TIMEOUT = 10000;
  * @returns {Promise<Response>} - Returns a fetch Response object if successful.
  * @throws {Error} - Throws an error if all attempts fail or timeout occurs.
  ****************************************************************************************/
-async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retries = 1) {
+async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retries = 5) {
     // Loop through attempts, including retries
     for (let attempt = 1; attempt <= retries + 1; attempt++) {
         // Create AbortController for timeout handling
@@ -54,9 +54,9 @@ async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retr
         } catch (error) {
             clearTimeout(timeoutId); // Clear timeout on error
 
-            // If retries remain, wait 500ms and retry
+            // If retries remain, wait 1000ms and retry
             if (attempt <= retries) {
-                await new Promise(res => setTimeout(res, timeout / 10));
+                await new Promise(res => setTimeout(res, 1000));
             } else {
                 // No retries left, throw the error
                 throw error;
@@ -91,11 +91,11 @@ function createEmbed({
         .setColor(0x57f287)
         .setThumbnail(thumbnailUrl || '')
         .addFields(
-            // {
-            //     name: '💰 Current Price',
-            //     value: `\`\`\`\n${currentPrice} (${suggestion})\n\`\`\``,
-            //     inline: false
-            // },
+            {
+                name: '💰 Current Price',
+                value: `\`\`\`\n${currentPrice}\n\`\`\``,
+                inline: false
+            },
             {
                 name: '🎯 Support Levels',
                 value: supportLevels.length > 0
@@ -123,8 +123,6 @@ function createEmbed({
                 inline: false
             }
         )
-        .setFooter({ text: 'ข้อมูลจาก Google Sheets' })
-        .setTimestamp();
 
     return [embed];
 }
