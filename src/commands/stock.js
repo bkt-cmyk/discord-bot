@@ -151,11 +151,9 @@ module.exports = {
             .setDescription(`### > ${symbol}\nThe requested stock information is currently unavailable.`)
             .addFields({
                 name: '▸ Possible Reasons',
-                value: '```・No stock in Google Sheet\n・Invalid symbol or ticker\n・API rate limit reached\n・Request timeout (>10s)```',
+                value: '```・No stock in Google Sheet\n・Invalid symbol or ticker\n・API rate limit reached\n・Request timeout```',
                 inline: false
             })
-            .setColor(0xFF6B6B)
-            .setTimestamp();
 
         try {
             // Prepare form data
