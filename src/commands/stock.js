@@ -44,7 +44,9 @@ async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retr
             clearTimeout(timeoutId); // Clear timeout if fetch succeeds
 
             // Check if response is OK (status code 2xx)
-            if (!response.ok) {
+            const isEmpty = dataInfo.data[0] && Object.keys(dataInfo.data[0]).length === 0;
+
+            if (!response.ok || isEmpty) {
                 throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
             }
 
@@ -170,9 +172,9 @@ module.exports = {
             if (!response.ok) throw new Error('Failed to fetch data');
 
             const dataInfo = await response.json();
-            
+
             let embedsToSend = [errorEmbed]; // default
-            
+
             const isEmpty = dataInfo.data[0] && Object.keys(dataInfo.data[0]).length === 0;
             if (!isEmpty) {
                 embedsToSend = createEmbed({
