@@ -87,18 +87,15 @@ function createEmbed({
     note = Array.isArray(note) ? note : [];
 
     const embed = new EmbedBuilder()
-        .setTitle(symbol !== 'NULL' ? `>>> **${symbol}**\n*${companyName}*` : 'Stock Alert')
-        .setDescription('————————————')
+        .setAuthor({
+            name: `${symbol} | ${companyName}`,
+            iconURL: thumbnailUrl,
+        })
+        .setTitle(symbol !== 'NULL' ? `>>> **${currentPrice} USD**` : 'NULL')
         .setColor(0x57f287)
-        .setThumbnail(thumbnailUrl || '')
         .addFields(
             {
-                name: '💰 Current Price',
-                value: `\`\`\`\n${currentPrice}\n\`\`\``,
-                inline: false
-            },
-            {
-                name: '🎯 Support Levels',
+                name: '▶ *Support Levels*',
                 value: supportLevels.length > 0
                     ? "```\n" +
                     supportLevels.map((v, i) => {
@@ -111,21 +108,21 @@ function createEmbed({
                 inline: false
             },
             {
-                name: '📅 SMA (TFD)',
+                name: '▶ *SMA (TFD)*',
                 value: smaDay.length > 0
                     ? `\`\`\`\n${smaDay.map((v, i) => `${[50, 100, 200][i]}D`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
                     : '```No data```',
                 inline: false
             },
             {
-                name: '📅 SMA (TFW)',
+                name: '▶ *SMA (TFW)*',
                 value: smaWeek.length > 0
                     ? `\`\`\`\n${smaWeek.map((v, i) => `${[50, 100][i]}W`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
                     : '```No data```',
                 inline: false
             },
             {
-                name: '📝 Notes',
+                name: '▶ *Notes*',
                 value: note.length > 0 ? `\`\`\`\n${note[0]}\n\`\`\`` : '```No data```',
                 inline: false
             }
@@ -173,10 +170,11 @@ module.exports = {
             if (!response.ok) throw new Error('Failed to fetch data');
 
             const dataInfo = await response.json();
-
+            
             let embedsToSend = [errorEmbed]; // default
-
-            if (dataInfo.data && Array.isArray(dataInfo.data) && dataInfo.data.length > 0 && dataInfo.data[0]) {
+            
+            const isEmpty = dataInfo.data[0] && Object.keys(dataInfo.data[0]).length === 0;
+            if (!isEmpty) {
                 embedsToSend = createEmbed({
                     symbol: dataInfo.data[0].ticker,
                     companyName: dataInfo.data[0].companyName,
