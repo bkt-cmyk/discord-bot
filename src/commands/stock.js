@@ -71,6 +71,7 @@ async function fetchWithTimeout(url, options = {}, timeout = FETCH_TIMEOUT, retr
  ****************************************************************************************/
 function createEmbed({
     symbol = 'NULL',
+    companyName = 'No data',
     thumbnailUrl = null,
     currentPrice = 'No data',
     suggestion = 'No data',
@@ -86,8 +87,8 @@ function createEmbed({
     note = Array.isArray(note) ? note : [];
 
     const embed = new EmbedBuilder()
-        .setTitle(symbol !== 'NULL' ? `> Stock Alert: ***${symbol}***` : 'Stock Alert')
-        .setDescription('——————————')
+        .setTitle(symbol !== 'NULL' ? `>>> **${symbol}**\n*${companyName}*` : 'Stock Alert')
+        .setDescription('————————————')
         .setColor(0x57f287)
         .setThumbnail(thumbnailUrl || '')
         .addFields(
@@ -99,8 +100,14 @@ function createEmbed({
             {
                 name: '🎯 Support Levels',
                 value: supportLevels.length > 0
-                    ? `\`\`\`\n${supportLevels.map((v, i) => `ไม้ที่ ${i + 1}: ${v}`).join('\n')}\n\`\`\``
-                    : '```No data```',
+                    ? "```\n" +
+                    supportLevels.map((v, i) => {
+                        const colors = ["🟩", "🟨", "🟧", "🟥"];
+                        const color = colors[i % colors.length];
+                        return `${color}ไม้ที่ ${i + 1}: ${v}`;
+                    }).join("\n") +
+                    "\n```"
+                    : "```No data```",
                 inline: false
             },
             {
@@ -172,6 +179,7 @@ module.exports = {
             if (dataInfo.data && Array.isArray(dataInfo.data) && dataInfo.data.length > 0 && dataInfo.data[0]) {
                 embedsToSend = createEmbed({
                     symbol: dataInfo.data[0].ticker,
+                    companyName: dataInfo.data[0].companyName,
                     thumbnailUrl: dataInfo.data[0].thumbnailUrl,
                     currentPrice: dataInfo.data[0].currentPrice,
                     suggestion: dataInfo.data[0].suggestion,
