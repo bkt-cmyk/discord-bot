@@ -104,7 +104,7 @@ function createEmbed({
                     supportLevels.map((v, i) => {
                         const colors = ["🟩", "🟨", "🟧", "🟥"];
                         const color = colors[i % colors.length];
-                        return `${color}ไม้ที่ ${i + 1}: ${v}`;
+                        return `${color} ไม้ที่ ${i + 1}: ${v}`;
                     }).join("\n") +
                     "\n```"
                     : "```No data```",
