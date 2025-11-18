@@ -70,16 +70,16 @@ async function fetchWithTimeout(url, options = {}, timeout = 5000, retries = 3) 
 }
 
 
-
 /****************************************************************************************
  * 🎨 createEmbed(data)
  ****************************************************************************************/
 function createEmbed({
-    symbol = 'NULL',
-    companyName = 'No data',
+    symbol = '',
+    longName = '',
     thumbnailUrl = null,
-    currentPrice = 'No data',
-    suggestion = 'No data',
+    regularMarketPrice = '',
+    currency = '',
+    suggestion = '',
     supportLevels = [],
     smaDay = [],
     smaWeek = [],
@@ -93,10 +93,10 @@ function createEmbed({
 
     const embed = new EmbedBuilder()
         .setAuthor({
-            name: `${symbol} | ${companyName}`,
+            name: `${symbol} | ${longName}`,
             iconURL: thumbnailUrl,
         })
-        .setTitle(symbol !== 'NULL' ? `>>> **${currentPrice} USD**` : 'NULL')
+        .setTitle(symbol !== 'NULL' ? `>>> **${regularMarketPrice} ${currency}**` : 'NULL')
         .setColor(0x57f287)
         .addFields(
             {
@@ -175,21 +175,21 @@ module.exports = {
             if (!response.ok) throw new Error('Failed to fetch data');
 
             const dataInfo = await response.json();
-
             let embedsToSend = [errorEmbed]; // default
+            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0;
 
-            const isEmpty = dataInfo.data[0] && Object.keys(dataInfo.data[0]).length === 0;
             if (!isEmpty) {
                 embedsToSend = createEmbed({
-                    symbol: dataInfo.data[0].ticker,
-                    companyName: dataInfo.data[0].companyName,
-                    thumbnailUrl: dataInfo.data[0].thumbnailUrl,
-                    currentPrice: dataInfo.data[0].currentPrice,
-                    suggestion: dataInfo.data[0].suggestion,
-                    supportLevels: dataInfo.data[0].supportLevels,
-                    smaDay: dataInfo.data[0].smaDay,
-                    smaWeek: dataInfo.data[0].smaWeek,
-                    note: dataInfo.data[0].note
+                    symbol: dataInfo.ticker,
+                    longName: dataInfo.longName,
+                    thumbnailUrl: dataInfo.thumbnailUrl,
+                    regularMarketPrice: dataInfo.regularMarketPrice,
+                    currency: dataInfo.currency,
+                    suggestion: dataInfo.suggestion,
+                    supportLevels: dataInfo.supportLevels,
+                    smaDay: dataInfo.smaDay,
+                    smaWeek: dataInfo.smaWeek,
+                    note: dataInfo.note
                 });
             }
 
