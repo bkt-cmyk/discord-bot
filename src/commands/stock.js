@@ -176,7 +176,9 @@ module.exports = {
 
             const dataInfo = await response.json();
             let embedsToSend = [errorEmbed]; // default
-            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0;
+            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0 && dataInfo.ticker;
+
+            // console.log(dataInfo);
 
             if (!isEmpty) {
                 embedsToSend = createEmbed({
