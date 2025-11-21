@@ -25,18 +25,11 @@ module.exports = {
         try {
             const browser = await puppeteer.launch({
                 headless: true,
-                executablePath: process.env.PUPPETEER_EXECUTABLE_PATH, // Render provides this
                 args: [
                     '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--disable-infobars',
-                    '--window-size=1280,720'
-                ],
+                    '--disable-setuid-sandbox'
+                ]
             });
-
-
 
             const page = await browser.newPage();
             await page.setViewport({ width: 1280, height: 720 });
