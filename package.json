@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/bot.js",
-    "build": "echo 'No build step needed'"
+    "build": "chmod +x render-build.sh && ./build.sh"
   },
   "repository": {
     "type": "git",
