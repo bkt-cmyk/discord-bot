@@ -6,7 +6,8 @@
   "scripts": {
     "test": "Hellow Test 123!",
     "start": "node src/bot.js",
-    "build": "npm install"
+    "build": "npm install",
+    "postinstall": "PUPPETEER_PRODUCT=chrome npm rebuild puppeteer"
   },
   "repository": {
     "type": "git",
