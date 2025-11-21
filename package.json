@@ -4,9 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/bot.js",
-    "build": "bash render-build.sh"
+    "build": "chmod +x render-build.sh && ./render-build.sh"
   },
   "repository": {
     "type": "git",
