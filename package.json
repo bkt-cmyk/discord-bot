@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/bot.js",
+    "build": "bash render-build.sh"
   },
   "repository": {
     "type": "git",
@@ -23,7 +25,6 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^24.31.0",
-    "puppeteer-core": "^24.31.0"
+    "puppeteer": "^24.31.0"
   }
 }
