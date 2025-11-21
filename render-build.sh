@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install Chromium dependencies for Puppeteer on Render
+# Install Chromium dependencies for Puppeteer on Render - version 1
 
 set -e
 
