@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Install Chromium dependencies for Puppeteer on Render - version 1
-
 set -e
 
+echo "Installing dependencies"
 npm install
 
-# Puppeteer install step (downloads Chrome)
+echo "Rebuilding puppeteer with bundled chrome"
+PUPPETEER_PRODUCT=chrome \
 PUPPETEER_CACHE_DIR="/opt/render/project/.cache/puppeteer" \
-  PUPPETEER_PRODUCT=chrome \
-  npm rebuild puppeteer
+npm rebuild puppeteer
 
+echo "Build completed"
