@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/bot.js",
-    "build": "chmod +x build.sh && ./build.sh"
+    "test": "Hellow Test 123!",
+    "start": "node src/bot.js"
   },
   "repository": {
     "type": "git",
