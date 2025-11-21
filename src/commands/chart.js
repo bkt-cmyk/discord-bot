@@ -93,7 +93,7 @@ module.exports = {
 
             await browser.close();
         } catch (error) {
-            // console.error(error);
+            console.error(error);
             await interaction.editReply(`❌ Failed to generate chart for ${ticker}`);
         }
     },
