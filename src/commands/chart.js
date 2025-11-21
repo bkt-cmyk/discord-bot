@@ -25,8 +25,13 @@ module.exports = {
         try {
             const browser = await puppeteer.launch({
                 headless: true,
-                args: ['--no-sandbox', '--disable-setuid-sandbox'],
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage', // optional but improves stability
+                ],
             });
+
 
             const page = await browser.newPage();
             await page.setViewport({ width: 1280, height: 720 });
@@ -65,7 +70,7 @@ module.exports = {
                     screenshotBuffer = await frameElement.screenshot();
                     if (screenshotBuffer) break;
                 } catch (e) {
-                    console.log(`Retry screenshot ${i + 1}...`);
+                    // console.log(`Retry screenshot ${i + 1}...`);
                     await new Promise(res => setTimeout(res, 1000));
                 }
             }
@@ -83,7 +88,7 @@ module.exports = {
 
             await browser.close();
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             await interaction.editReply(`❌ Failed to generate chart for ${ticker}`);
         }
     },
