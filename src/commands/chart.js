@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
-const { chromium } = require('playwright');  // ⭐ เปลี่ยน puppeteer → playwright
+const { chromium } = require('playwright');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,21 +23,23 @@ module.exports = {
         await interaction.deferReply();
 
         try {
+            // 🔹 Runtime check: install chromium if not found
+            const browserPath = chromium.executablePath();
+            if (!browserPath) {
+                console.log('Chromium not found. Installing at runtime...');
+                const { install } = require('playwright/lib/install/browserFetcher');
+                await install('chromium');
+            }
 
-            // ⭐ Launch Playwright Chromium
+            // 🔹 Launch Playwright Chromium
             const browser = await chromium.launch({
                 headless: true,
                 args: [
                     "--no-sandbox",
                     "--disable-setuid-sandbox",
-                    "--disable-dev-shm-usage",
-                    "--disable-gpu",
-                    "--disable-software-rasterizer",
-                    "--no-zygote",
-                    "--single-process"
+                    "--disable-dev-shm-usage"
                 ]
             });
-
 
             const page = await browser.newPage();
             await page.setViewportSize({ width: 1280, height: 720 });
@@ -60,29 +62,17 @@ module.exports = {
 
             await page.setContent(html, { waitUntil: 'networkidle' });
 
-            // Get iframe
             const frameHandle = await page.$('#tv-widget');
             const frame = await frameHandle.contentFrame();
 
-            // Wait for chart canvas
             await frame.waitForSelector('canvas', { timeout: 20000 });
-
-            // Ensure canvas is fully rendered
             await frame.waitForFunction(() => {
                 const c = document.querySelector('canvas');
                 return c && c.width > 800;
             }, null, { timeout: 20000 });
 
-            // ⭐ Screenshot from iframe element
-            let screenshotBuffer;
-            for (let i = 0; i < 3; i++) {
-                try {
-                    screenshotBuffer = await frameHandle.screenshot();
-                    if (screenshotBuffer) break;
-                } catch (e) {
-                    await new Promise(res => setTimeout(res, 1000));
-                }
-            }
+            // Screenshot
+            const screenshotBuffer = await frameHandle.screenshot();
 
             const attachment = new AttachmentBuilder(screenshotBuffer, {
                 name: `${ticker}-chart.png`
