@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "Hellow Test 123!",
+    "test": "echo \"Hello Test 123!\"",
     "start": "node src/bot.js",
-    "build": "npm install",
-    "postinstall": "PUPPETEER_PRODUCT=chrome npm rebuild puppeteer"
+    "install:chromium": "npx playwright install chromium"
   },
   "repository": {
     "type": "git",
@@ -26,6 +25,6 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
-    "puppeteer": "^24.31.0"
+    "playwright": "^1.56.1"
   }
 }

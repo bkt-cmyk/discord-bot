@@ -1,5 +1,5 @@
-const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js'); // Add EmbedBuilder
-const puppeteer = require('puppeteer');
+const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const { chromium } = require('playwright');  // ⭐ เปลี่ยน puppeteer → playwright
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,33 +16,37 @@ module.exports = {
                 .setRequired(false)
         ),
 
-    // async execute(interaction) {
-    //     await interaction.reply('👋 Hello there!');
-    // },
-
     async execute(interaction) {
         const ticker = interaction.options.getString('ticker').toUpperCase();
         const interval = (interaction.options.getString('interval') || 'D').toUpperCase();
 
-        await interaction.deferReply(); // Inform Discord that loading
+        await interaction.deferReply();
 
         try {
-            const browser = await puppeteer.launch({
+
+            // ⭐ Launch Playwright Chromium
+            const browser = await chromium.launch({
                 headless: true,
                 args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-dev-shm-usage",
+                    "--disable-gpu",
+                    "--disable-software-rasterizer",
+                    "--no-zygote",
+                    "--single-process"
                 ]
             });
 
+
             const page = await browser.newPage();
-            await page.setViewport({ width: 1280, height: 720 });
+            await page.setViewportSize({ width: 1280, height: 720 });
 
             // Load TradingView iframe
             const html = `
             <!DOCTYPE html>
             <html>
-              <body>
+              <body style="margin:0; padding:0; overflow:hidden;">
                 <iframe
                   id="tv-widget"
                   src="https://s.tradingview.com/widgetembed/?symbol=${ticker}&interval=${interval}&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true"
@@ -53,45 +57,52 @@ module.exports = {
               </body>
             </html>
             `;
-            await page.setContent(html, { waitUntil: 'networkidle0' });
 
-            const frameElement = await page.$('#tv-widget');
-            const frame = await frameElement.contentFrame();
+            await page.setContent(html, { waitUntil: 'networkidle' });
 
-            // Wait until canvas is loaded and has proper size
+            // Get iframe
+            const frameHandle = await page.$('#tv-widget');
+            const frame = await frameHandle.contentFrame();
+
+            // Wait for chart canvas
             await frame.waitForSelector('canvas', { timeout: 20000 });
+
+            // Ensure canvas is fully rendered
             await frame.waitForFunction(() => {
                 const c = document.querySelector('canvas');
-                return c && c.width >= 800 && c.height >= 600;
-            }, { timeout: 20000 });
+                return c && c.width > 800;
+            }, null, { timeout: 20000 });
 
-            // Retry screenshot 3 times if fail
+            // ⭐ Screenshot from iframe element
             let screenshotBuffer;
             for (let i = 0; i < 3; i++) {
                 try {
-                    screenshotBuffer = await frameElement.screenshot();
+                    screenshotBuffer = await frameHandle.screenshot();
                     if (screenshotBuffer) break;
                 } catch (e) {
-                    // console.log(`Retry screenshot ${i + 1}...`);
                     await new Promise(res => setTimeout(res, 1000));
                 }
             }
 
-            // Create attachment from buffer
-            const attachment = new AttachmentBuilder(screenshotBuffer, { name: `${ticker}-chart.png` });
+            const attachment = new AttachmentBuilder(screenshotBuffer, {
+                name: `${ticker}-chart.png`
+            });
 
-            // Create an embed with the chart
             const embed = new EmbedBuilder()
-                .setColor(0x23f9fc) // Optional: embed color
-                .setImage(`attachment://${ticker}-chart.png`);
+                .setColor(0x23f9fc)
+                .setImage(`attachment://${ticker}-chart.png`)
+                .setTitle(`${ticker} Chart (${interval})`);
 
-            // Send embed with attachment
-            await interaction.editReply({ embeds: [embed], files: [attachment] });
+            await interaction.editReply({
+                embeds: [embed],
+                files: [attachment]
+            });
 
             await browser.close();
-        } catch (error) {
-            console.error(error);
-            await interaction.editReply(`❌ Failed to generate chart for ${ticker}`);
+
+        } catch (err) {
+            console.error(err);
+            await interaction.editReply(`❌ Failed to generate chart for **${ticker}**`);
         }
-    },
+    }
 };
