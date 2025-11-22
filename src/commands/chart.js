@@ -25,11 +25,11 @@ module.exports = {
         try {
             // 🔹 Runtime check: install chromium if not found
             const browserPath = chromium.executablePath();
-            // if (!browserPath) {
-            //     // console.log('Chromium not found. Installing at runtime...');
-            //     const { install } = require('playwright/lib/install/browserFetcher');
-            //     await install('chromium');
-            // }
+            if (!browserPath) {
+                // console.log('Chromium not found. Installing at runtime...');
+                const { install } = require('playwright/lib/install/browserFetcher');
+                await install('chromium');
+            }
 
             // 🔹 Launch Playwright Chromium
             const browser = await chromium.launch({
