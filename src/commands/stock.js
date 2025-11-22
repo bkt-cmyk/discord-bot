@@ -7,7 +7,8 @@
  *  - Handles request timeout and API errors
  ****************************************************************************************/
 
-const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
+
 require('dotenv').config();
 const SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
 
@@ -83,7 +84,8 @@ function createEmbed({
     supportLevels = [],
     smaDay = [],
     smaWeek = [],
-    note = []
+    note = [],
+    interval = []
 }) {
     // Ensure arrays
     supportLevels = Array.isArray(supportLevels) ? supportLevels : [];
@@ -98,6 +100,7 @@ function createEmbed({
         })
         .setTitle(symbol !== 'NULL' ? `>>> **${regularMarketPrice} ${currency}**` : 'NULL')
         .setColor(0x57f287)
+        .setImage(`attachment://${symbol}-$${interval}-chart.png`)
         .addFields(
             {
                 name: '▶ *Support Levels*',
@@ -136,6 +139,77 @@ function createEmbed({
     return [embed];
 }
 
+
+/**
+ * Generate TradingView chart screenshot for a given ticker and interval
+ * @param {string} ticker - Stock ticker, e.g., "MSFT"
+ * @param {string} interval - Chart interval: D (Daily), W (Weekly), M (Monthly)
+ * @returns {Promise<{files: AttachmentBuilder[]}>}
+*/
+
+const { chromium } = require('playwright');
+
+async function generateChart(ticker, interval = 'D') {
+    ticker = ticker.toUpperCase();
+    interval = interval.toUpperCase();
+
+    // 🔹 Runtime check: install chromium if not found
+    const browserPath = chromium.executablePath();
+    if (!browserPath) {
+        // console.log('Chromium not found. Installing at runtime...');
+        const { install } = require('playwright/lib/install/browserFetcher');
+        await install('chromium');
+    }
+
+    // 🔹 Launch Playwright Chromium
+    const browser = await chromium.launch({
+        headless: true,
+        args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage"
+        ]
+    });
+
+    const page = await browser.newPage();
+    await page.setViewportSize({ width: 1280, height: 720 });
+
+    // Load TradingView iframe
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <body style="margin:0; padding:0; overflow:hidden;">
+        <iframe
+          id="tv-widget"
+          src="https://s.tradingview.com/widgetembed/?symbol=${ticker}&interval=${interval}&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true&studies=STD;MACD"
+          width="1280"
+          height="720"
+          frameborder="0"
+        ></iframe>
+      </body>
+    </html>
+    `;
+
+    await page.setContent(html, { waitUntil: 'networkidle' });
+
+    const frameHandle = await page.$('#tv-widget');
+
+    // รอโหลด canvas ให้ครบ
+    await page.waitForTimeout(5000); // เพิ่มเวลาเผื่อ widget render เสร็จ
+
+    // Screenshot
+    const screenshotBuffer = await frameHandle.screenshot();
+
+    await browser.close();
+
+    const attachment = new AttachmentBuilder(screenshotBuffer, {
+        name: `${ticker}-${interval}-chart.png`
+    });
+
+    return [attachment];
+}
+
+
 /****************************************************************************************
  * ⚙️ Discord Slash Command: /stock
  ****************************************************************************************/
@@ -147,12 +221,17 @@ module.exports = {
             option.setName('ticker')
                 .setDescription('Stock ticker, e.g., NVDA')
                 .setRequired(true)
+        ).addStringOption(option =>
+            option.setName('interval')
+                .setDescription('Chart interval: D (Daily), W (Weekly), M (Monthly)')
+                .setRequired(false)
         ),
 
     async execute(interaction) {
         await interaction.deferReply(); // Avoid timeout
 
         const symbol = interaction.options.getString('ticker').toUpperCase();
+        const interval = (interaction.options.getString('interval') || 'D').toUpperCase();
 
         // Fallback error embed
         const errorEmbed = new EmbedBuilder()
@@ -169,17 +248,18 @@ module.exports = {
             const formData = new URLSearchParams();
             formData.append('ticker', symbol);
 
-            // Fetch with timeout
+            // Fetch stock info with timeout
             const response = await fetchWithTimeout(SCRIPT_URL, { method: 'POST', body: formData }, FETCH_TIMEOUT);
-
+            // Check response
             if (!response.ok) throw new Error('Failed to fetch data');
-
+            // Prepare
             const dataInfo = await response.json();
             let embedsToSend = [errorEmbed]; // default
-            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0 && dataInfo.ticker;
 
-            // console.log(dataInfo);
+            // Get stock chart
+            const attachment = await generateChart(dataInfo.ticker, interval);
 
+            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0 && dataInfo.ticker && attachment;
             if (!isEmpty) {
                 embedsToSend = createEmbed({
                     symbol: dataInfo.ticker,
@@ -191,11 +271,13 @@ module.exports = {
                     supportLevels: dataInfo.supportLevels,
                     smaDay: dataInfo.smaDay,
                     smaWeek: dataInfo.smaWeek,
-                    note: dataInfo.note
+                    note: dataInfo.note,
+                    interval: interval
                 });
             }
 
-            await interaction.editReply({ embeds: embedsToSend });
+            // await interaction.editReply({ embeds: embedsToSend });
+            await interaction.editReply({ embeds: embedsToSend, files: attachment });
 
         } catch (error) {
             // console.dir(error, { depth: null, colors: true });

@@ -25,11 +25,11 @@ module.exports = {
         try {
             // 🔹 Runtime check: install chromium if not found
             const browserPath = chromium.executablePath();
-            if (!browserPath) {
-                console.log('Chromium not found. Installing at runtime...');
-                const { install } = require('playwright/lib/install/browserFetcher');
-                await install('chromium');
-            }
+            // if (!browserPath) {
+            //     // console.log('Chromium not found. Installing at runtime...');
+            //     const { install } = require('playwright/lib/install/browserFetcher');
+            //     await install('chromium');
+            // }
 
             // 🔹 Launch Playwright Chromium
             const browser = await chromium.launch({
@@ -75,13 +75,13 @@ module.exports = {
             const screenshotBuffer = await frameHandle.screenshot();
 
             const attachment = new AttachmentBuilder(screenshotBuffer, {
-                name: `${ticker}-chart.png`
+                name: `${ticker}-${interval}-chart.png`
             });
 
             const embed = new EmbedBuilder()
                 .setColor(0x23f9fc)
-                .setImage(`attachment://${ticker}-chart.png`)
-                .setTitle(`${ticker} Chart (${interval})`);
+                .setImage(`attachment://${ticker}-${interval}-chart.png`)
+                .setTitle(`>>> Chart for *${ticker}*`);
 
             await interaction.editReply({
                 embeds: [embed],
@@ -91,7 +91,7 @@ module.exports = {
             await browser.close();
 
         } catch (err) {
-            console.error(err);
+            // console.error(err);
             await interaction.editReply(`❌ Failed to generate chart for **${ticker}**`);
         }
     }
