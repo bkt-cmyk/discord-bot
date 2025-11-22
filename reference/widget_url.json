@@ -1,0 +1,190 @@
+{
+  "crypto-mkt-screener": {
+    "width": 1000,
+    "height": 490,
+    "defaultColumn": "overview",
+    "market": "crypto",
+    "screener_type": "crypto_mkt",
+    "displayCurrency": "USD",
+    "isTransparent": false
+  },
+  "events": {
+    "width": 510,
+    "height": 600,
+    "isTransparent": false,
+    "hideImportanceIndicator": false,
+    "autosize": false
+  },
+  "forex-cross-rates": {
+    "width": 770,
+    "height": 400,
+    "isTransparent": false,
+    "currencies": ["EUR","USD","JPY","GBP","CHF","AUD","CAD","NZD"],
+    "frameElementId": null,
+    "autosize": false
+  },
+  "forex-heat-map": {
+    "width": 770,
+    "height": 400,
+    "isTransparent": false,
+    "currencies": ["EUR","USD","JPY","GBP","CHF","AUD","CAD","NZD","CNY"],
+    "frameElementId": null,
+    "autosize": false
+  },
+  "hotlists": {
+    "width": 400,
+    "height": 600,
+    "isTransparent": false,
+    "dateRange": "12M",
+    "showSymbolLogo": false
+  },
+  "market-overview": {
+    "width": 400,
+    "height": 650,
+    "isTransparent": false,
+    "dateRange": "12M",
+    "showSymbolLogo": true
+  },
+  "market-quotes": {
+    "width": 770,
+    "height": 450,
+    "isTransparent": false,
+    "showSymbolLogo": false
+  },
+  "mini-symbol-overview": {
+    "width": 350,
+    "height": 220,
+    "symbol": "FX:EURUSD",
+    "dateRange": "12M",
+    "isTransparent": false,
+    "autosize": false,
+    "largeChartUrl": ""
+  },
+  "symbol-overview": {
+    "width": 1000,
+    "height": 500,
+    "symbols": [["Apple","AAPL|1D"],["Google","GOOGL|1D"],["Microsoft","MSFT|1D"]],
+    "autosize": false,
+    "chartOnly": false,
+    "hideDateRanges": false,
+    "hideMarketStatus": false,
+    "hideSymbolLogo": false,
+    "scalePosition": "right",
+    "scaleMode": "Normal",
+    "fontFamily": "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
+    "fontSize": "10",
+    "noTimeScale": false,
+    "chartType": "area",
+    "valuesTracking": "0",
+    "changeMode": "price-and-percent"
+  },
+  "advanced-chart": {
+    "bodyId": "widget-container",
+    "bodyClasses": ["chart-page","unselectable","on-widget"]
+  },
+  "screener": {
+    "width": 1100,
+    "height": 523,
+    "defaultColumn": "overview",
+    "defaultScreen": "general",
+    "market": "forex",
+    "showToolbar": true,
+    "isTransparent": false
+  },
+  "single-quote": {
+    "width": 350,
+    "symbol": "FX:EURUSD",
+    "isTransparent": false
+  },
+  "symbol-profile": {
+    "width": 480,
+    "height": 650,
+    "symbol": "NASDAQ:AAPL",
+    "isTransparent": false
+  },
+  "symbol-info": {
+    "width": 1000,
+    "symbol": "NASDAQ:AAPL",
+    "isTransparent": false
+  },
+  "technical-analysis": {
+    "interval": "1m",
+    "width": 425,
+    "height": 450,
+    "symbol": "NASDAQ:AAPL",
+    "isTransparent": false,
+    "showIntervalTabs": true,
+    "displayMode": "single"
+  },
+  "ticker-tape": {
+    "isTransparent": false,
+    "displayMode": "adaptive",
+    "showSymbolLogo": false
+  },
+  "tickers": {
+    "isTransparent": false,
+    "showSymbolLogo": false
+  },
+  "financials": {
+    "width": 480,
+    "height": 830,
+    "autosize": false,
+    "symbol": "NASDAQ:AAPL",
+    "isTransparent": false,
+    "displayMode": "regular",
+    "largeChartUrl": ""
+  },
+  "timeline": {
+    "width": 480,
+    "height": 830,
+    "autosize": false,
+    "isTransparent": false,
+    "displayMode": "regular",
+    "feedMode": "all_symbols"
+  },
+  "stock-heatmap": {
+    "width": 500,
+    "height": 500,
+    "autosize": true,
+    "dataSource": "SPX500",
+    "exchanges": [],
+    "grouping": "sector",
+    "blockSize": "market_cap_basic",
+    "blockColor": "change",
+    "hasTopBar": false,
+    "isDataSetEnabled": false,
+    "isZoomEnabled": true,
+    "hasSymbolTooltip": true,
+    "symbolUrl": "",
+    "isMonoSize": false
+  },
+  "crypto-coins-heatmap": {
+    "width": 500,
+    "height": 500,
+    "autosize": true,
+    "dataSource": "Crypto",
+    "blockSize": "market_cap_calc",
+    "blockColor": "24h_close_change|5",
+    "hasTopBar": false,
+    "isDataSetEnabled": false,
+    "isZoomEnabled": true,
+    "hasSymbolTooltip": true,
+    "symbolUrl": "",
+    "isMonoSize": false
+  },
+  "etf-heatmap": {
+    "width": 500,
+    "height": 500,
+    "autosize": true,
+    "dataSource": "AllUSEtf",
+    "blockSize": "volume",
+    "blockColor": "change",
+    "grouping": "asset_class",
+    "hasTopBar": false,
+    "isDataSetEnabled": false,
+    "isZoomEnabled": true,
+    "hasSymbolTooltip": true,
+    "symbolUrl": "",
+    "isMonoSize": false
+  }
+}

@@ -1,0 +1,5 @@
+widget-1 -> https://www.tradingview.com/widget-docs/getting-started/#getting-started
+widget-2 -> https://developer.interactsoftware.com/docs/embedding-tradingview-widgets
+
+symbol-overview -> https://s.tradingview.com/embed-widget/symbol-overview/?symbols=cost
+stock-chart -> https://s.tradingview.com/widgetembed/?symbol=msft&interval=D&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true
