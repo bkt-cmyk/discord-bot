@@ -229,7 +229,8 @@ async function generateChart(ticker, interval = 'D') {
 
 
     } catch (err) {
-        await interaction.editReply(`❌ Failed to generate chart for **${ticker}**`);
+        // await interaction.editReply(`❌ Failed to generate chart for **${ticker}**`);
+        return null;
     } finally {
         if (page) await page.close();
         if (browser) await browser.close();
