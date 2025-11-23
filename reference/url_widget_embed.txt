@@ -2,4 +2,6 @@ widget-1 -> https://www.tradingview.com/widget-docs/getting-started/#getting-sta
 widget-2 -> https://developer.interactsoftware.com/docs/embedding-tradingview-widgets
 
 symbol-overview -> https://s.tradingview.com/embed-widget/symbol-overview/?symbols=cost
-stock-chart -> https://s.tradingview.com/widgetembed/?symbol=msft&interval=D&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true
+stock-chart-1 -> https://s.tradingview.com/widgetembed/?symbol=msft&interval=D&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true
+stock-chart-2 -> https://s.tradingview.com/embed-widget/advanced-chart/?symbol=MSFT&interval=1D&style=8&theme=dark&hide_volume=true&hide_top_toolbar=true
+stock-chart-3 -> https://s.tradingview.com/embed-widget/advanced-chart/?symbol=MSFT&interval=1D&style=8&theme=dark&hide_volume=true&hide_top_toolbar=true&studies=STD;Divergence%251Indicator

@@ -51,7 +51,7 @@ module.exports = {
               <body style="margin:0; padding:0; overflow:hidden;">
                 <iframe
                   id="tv-widget"
-                  src="https://s.tradingview.com/embed-widget/advanced-chart/?symbol=${ticker}&interval=${interval}&style=8&theme=dark&hide_volume=true&hide_top_toolbar=true&studies=STD;Divergence%251Indicator"
+                  src="https://s.tradingview.com/widgetembed/?symbol=${ticker}&interval=${interval}&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true"
                   width="1280"
                   height="720"
                   frameborder="0"
@@ -71,8 +71,17 @@ module.exports = {
                 return c && c.width > 800;
             }, null, { timeout: 20000 });
 
+            
             // Screenshot
-            const screenshotBuffer = await frameHandle.screenshot();
+            let screenshotBuffer;
+            for (let attempt = 0; attempt <= 2; attempt++) {
+                // Delay for loading
+                await page.waitForTimeout(1000);
+                screenshotBuffer = await frameHandle.screenshot();
+                if (screenshotBuffer.length >= 10000) {
+                    break; // Image ready
+                }
+            }
 
             const attachment = new AttachmentBuilder(screenshotBuffer, {
                 name: `${ticker}-${interval}-chart.png`
