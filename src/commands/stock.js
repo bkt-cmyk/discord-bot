@@ -7,7 +7,7 @@
  *  - Handles request timeout and API errors
  ****************************************************************************************/
 
-const { SlashCommandBuilder, AttachmentBuilder, EmbedBuilder } = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 
 require('dotenv').config();
 const SCRIPT_URL = process.env.GOOGLE_SCRIPT_URL;
@@ -140,105 +140,6 @@ function createEmbed({
 }
 
 
-/**
- * Generate TradingView chart screenshot for a given ticker and interval
- * @param {string} ticker - Stock ticker, e.g., "MSFT"
- * @param {string} interval - Chart interval: D (Daily), W (Weekly), M (Monthly)
- * @returns {Promise<{files: AttachmentBuilder[]}>}
-*/
-
-const { chromium } = require('playwright');
-
-async function generateChart(ticker, interval = 'D') {
-
-    ticker = ticker.toUpperCase();
-    interval = interval.toUpperCase();
-
-    let browser;
-    let page;
-
-    try {
-        // launch chromium with low RAM mode
-        browser = await chromium.launch({
-            headless: true,
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--single-process",
-                "--no-zygote"
-            ]
-        });
-
-        page = await browser.newPage();
-        await page.setViewportSize({ width: 1280, height: 720 });
-
-        // block unnecessary resources
-        await page.route("**/*", (route) => {
-            const type = route.request().resourceType();
-            if (["image", "media", "font"].includes(type)) {
-                route.abort();
-            } else {
-                route.continue();
-            }
-        });
-
-        const html = `
-            <!DOCTYPE html>
-            <html>
-              <body style="margin:0; padding:0; overflow:hidden;">
-                <iframe
-                  id="tv-widget"
-                  src="https://s.tradingview.com/widgetembed/?symbol=${ticker}&interval=${interval}&theme=dark&style=8&locale=en&hide_volume=true&hide_top_toolbar=true"
-                  width="1280"
-                  height="720"
-                  frameborder="0"
-                ></iframe>
-              </body>
-            </html>
-            `;
-
-        await page.setContent(html, { waitUntil: 'networkidle' });
-
-        const frameHandle = await page.$('#tv-widget');
-        const frame = await frameHandle.contentFrame();
-
-        await frame.waitForSelector('canvas', { timeout: 20000 });
-        await frame.waitForFunction(() => {
-            const c = document.querySelector('canvas');
-            return c && c.width > 800;
-        }, null, { timeout: 20000 });
-
-        // Screenshot
-        let screenshotBuffer;
-        for (let attempt = 0; attempt <= 2; attempt++) {
-            // Delay for loading
-            await page.waitForTimeout(1000);
-            screenshotBuffer = await frameHandle.screenshot();
-            if (screenshotBuffer.length >= 10000) {
-                break; // Image ready
-            }
-        }
-
-        const attachment = new AttachmentBuilder(screenshotBuffer, {
-            name: `${ticker}-${interval}-chart.png`
-        });
-
-        return [attachment];
-
-
-    } catch (err) {
-        // await interaction.editReply(`❌ Failed to generate chart for **${ticker}**`);
-        return null;
-    } finally {
-        if (page) await page.close();
-        if (browser) await browser.close();
-    }
-}
-
-
-
 /****************************************************************************************
  * ⚙️ Discord Slash Command: /stock
  ****************************************************************************************/
@@ -298,7 +199,6 @@ module.exports = {
                 });
             }
 
-            // await interaction.editReply({ embeds: embedsToSend });
             await interaction.editReply({ embeds: embedsToSend });
 
         } catch (error) {

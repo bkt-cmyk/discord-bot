@@ -244,7 +244,7 @@ async function generateChart(ticker, interval = 'D') {
  ****************************************************************************************/
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('stock')
+        .setName('stk_grph')
         .setDescription('Get stock info from Google Sheet')
         .addStringOption(option =>
             option.setName('ticker')
