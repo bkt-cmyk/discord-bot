@@ -250,10 +250,6 @@ module.exports = {
             option.setName('ticker')
                 .setDescription('Stock ticker, e.g., NVDA')
                 .setRequired(true)
-        ).addStringOption(option =>
-            option.setName('interval')
-                .setDescription('Chart interval: D (Daily), W (Weekly), M (Monthly)')
-                .setRequired(false)
         ),
 
     async execute(interaction) {
