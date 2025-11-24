@@ -262,6 +262,9 @@ module.exports = {
         const symbol = interaction.options.getString('ticker').toUpperCase();
         const interval = (interaction.options.getString('interval') || 'D').toUpperCase();
 
+        const isChart = interaction.options.getString('interval');
+        let attachment = []
+
         // Fallback error embed
         const errorEmbed = new EmbedBuilder()
             .setTitle('***Unable to Fetch Stock Data***')
@@ -285,6 +288,11 @@ module.exports = {
             const dataInfo = await response.json();
             let embedsToSend = [errorEmbed]; // default
 
+            // Get stock chart
+            if (isChart) {
+                attachment = await generateChart(dataInfo.ticker, interval);
+            }
+
             const isEmpty = dataInfo && Object.keys(dataInfo).length === 0 && dataInfo.ticker;
             if (!isEmpty) {
                 embedsToSend = createEmbed({
@@ -303,7 +311,7 @@ module.exports = {
             }
 
             // await interaction.editReply({ embeds: embedsToSend });
-            await interaction.editReply({ embeds: embedsToSend });
+            await interaction.editReply({ embeds: embedsToSend, files: attachment });
 
         } catch (error) {
             // console.dir(error, { depth: null, colors: true });
