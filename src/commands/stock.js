@@ -181,8 +181,10 @@ module.exports = {
             // Prepare
             const dataInfo = await response.json();
             let embedsToSend = [errorEmbed]; // default
-
-            const isEmpty = dataInfo && Object.keys(dataInfo).length === 0 && dataInfo.ticker;
+            
+            // Check error
+            const isEmpty = dataInfo.ticker===undefined;
+            
             if (!isEmpty) {
                 embedsToSend = createEmbed({
                     symbol: dataInfo.ticker,

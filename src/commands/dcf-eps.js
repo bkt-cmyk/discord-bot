@@ -7,7 +7,7 @@ const axios = require("axios");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('dcf-fcf')
+        .setName('dcf-eps')
         .setDescription('Calculate Intrinsic Value by FCF')
         .addStringOption(option =>
             option.setName('ticker')
@@ -177,8 +177,8 @@ function buildValuationEmbed(embed_info) {
         .setAuthor({
             name: `${ticker} | ${longName}`
         })
-        .setTitle(`🌱 ***Earnings-Based Valuation*** 🌱`)
-        .setColor(0xfc21df)
+        // .setTitle(`🌱 ***Earnings-Based Valuation*** 🌱`)
+        .setColor(0x07f747)
         .addFields(
             { name: returnFromCurrentPrice[0], value: `>>> 🟩 **${returnFromCurrentPrice[1]}**`, inline: false },
             { name: fairValueAt5thYearEPS[0], value: `>>> 🟩 **${fairValueAt5thYearEPS[1]}**`, inline: false },
@@ -195,7 +195,8 @@ function buildValuationEmbed(embed_info) {
                 "```\n",
             inline: false
         })
-        .addFields({ name: '▶ Projected Fair Value', value: tableContent, inline: false });
+        .addFields({ name: '▶ Projected Fair Value', value: tableContent, inline: false })
+        .setFooter({ text: `🌱 DCF ・  Earnings-Based Valuation 🌱` })
 }
 
 
