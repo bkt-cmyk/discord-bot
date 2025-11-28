@@ -7,26 +7,26 @@ const axios = require("axios");
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('dcf-eps')
-        .setDescription('Calculate Intrinsic Value by EPS')
+        .setName('dcf-fcf')
+        .setDescription('Calculate Intrinsic Value by FCF')
         .addStringOption(option =>
             option.setName('ticker')
                 .setDescription('Stock Symbol')
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName('eps')
-                .setDescription('EPS')
+            option.setName('fcf-per-share')
+                .setDescription('Free Cash Flow per Share')
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName('eps-growth-rate')
-                .setDescription('EPS Growth Rate')
+            option.setName('fcf-growth-rate')
+                .setDescription('FCF Growth Rate')
                 .setRequired(true)
         )
         .addStringOption(option =>
-            option.setName('pe')
-                .setDescription('PE Ratio')
+            option.setName('fcf-yield')
+                .setDescription('FCF Yield')
                 .setRequired(true)
         )
         .addStringOption(option =>
@@ -41,9 +41,9 @@ module.exports = {
             await interaction.deferReply(); // Avoid timeout
 
             const ticker = interaction.options.getString('ticker');
-            const eps = interaction.options.getString('eps');
-            const epsGrowthRate = interaction.options.getString('eps-growth-rate');
-            const appropriatePE = interaction.options.getString('pe');
+            const fcfShare = interaction.options.getString('fcf-per-share');
+            const fcfGrowthRate = interaction.options.getString('fcf-growth-rate');
+            const fcfYield = interaction.options.getString('fcf-yield');
             const desiredReturn = interaction.options.getString('return');
 
             // ⭐ FIX: Proper async stock price fetch
@@ -52,11 +52,11 @@ module.exports = {
 
             const currentPrice = Number(stockInfo.data[0].regularMarketPrice);
 
-            let info = dcf_earning({
+            let info = dcf_fcf({
                 currentPrice,
-                eps: Number(eps),
-                epsGrowthRate: Number(epsGrowthRate),
-                appropriatePE: Number(appropriatePE),
+                fcfShare: Number(fcfShare),
+                fcfGrowthRate: Number(fcfGrowthRate),
+                fcfYield: Number(fcfYield),
                 desiredReturn: Number(desiredReturn),
             });
 
@@ -65,7 +65,6 @@ module.exports = {
             info.longName = stockInfo.data[0].longName;
 
             const embed = buildValuationEmbed(info);
-
 
             await interaction.editReply({ embeds: [embed] });
 
@@ -81,19 +80,20 @@ module.exports = {
 /****************************************************************************************
  * DCF Calculation
  ****************************************************************************************/
-function dcf_earning({
+function dcf_fcf({
     currentPrice,
-    eps,
-    epsGrowthRate,
-    appropriatePE,
+    fcfShare,
+    fcfGrowthRate,
+    fcfYield,
     desiredReturn
 }) {
 
     try {
-        const epsGrowthRate_rtn = epsGrowthRate;
+        const fcfGrowthRate_rtn = fcfGrowthRate;
         const desiredReturn_rtn = desiredReturn;
 
-        epsGrowthRate = epsGrowthRate >= 0 ? epsGrowthRate / 100 : 0;
+        fcfGrowthRate = fcfGrowthRate >= 0 ? fcfGrowthRate / 100 : 0;
+        fcfYield = fcfYield >= 0 ? fcfYield / 100 : 0;
         desiredReturn = desiredReturn >= 0 ? desiredReturn / 100 : 0;
 
         const forecastYear = 5;
@@ -101,35 +101,34 @@ function dcf_earning({
 
         let lastProjectedPrice = 0;
         let returnFromCurrentPrice = 0;
-        let fairValueAt5thYearEPS = 0;
+        let fairValueAt5thYearCF = 0;
 
-        let projectedEPS = eps;
+        let projectedFCFShare = fcfShare;
 
         for (let year = 1; year <= forecastYear; year++) {
-            projectedEPS *= (1 + epsGrowthRate);
-            const projectedPrice = appropriatePE * projectedEPS;
+            projectedFCFShare *= (1 + fcfGrowthRate);
+            const projectedPrice = projectedFCFShare / fcfYield;
             const discountedPrice = (projectedPrice / Math.pow(1 + desiredReturn, year)).toFixed(2);
             lastProjectedPrice = projectedPrice;
 
             fairValues.push(discountedPrice);
         }
 
-        returnFromCurrentPrice = (
-            (Math.pow((lastProjectedPrice / currentPrice), (1 / forecastYear)) - 1) * 100
-        ).toFixed(2);
+        // Return from current price
+        returnFromCurrentPrice = ((Math.pow((lastProjectedPrice / currentPrice), (1 / forecastYear)) - 1) * 100).toFixed(2);
+        fairValueAt5thYearCF = (fairValues[forecastYear - 1]);
 
-        fairValueAt5thYearEPS = fairValues[forecastYear - 1];
 
         return {
             currentPrice: ["Stock Price", currentPrice.toFixed(2)],
-            eps: ["EPS", eps.toFixed(2)],
-            epsGrowthRate: ["EPS Growth Rate", `${epsGrowthRate_rtn}%`],
-            appropriatePE: ["P/E Ratio", appropriatePE.toFixed(2)],
+            fcfShare: ["FCF/Share", fcfShare.toFixed(2)],
+            fcfGrowthRate: ["FCF Growth Rate", `${fcfGrowthRate_rtn}%`],
+            fcfYield: ["FCF Yield", `${fcfYield.toFixed(2)}%`],
             desiredReturn: ["Desired Return", `${desiredReturn_rtn}%`],
             returnFromCurrentPrice: ["▶ Return From Current Price", `${returnFromCurrentPrice} %`],
-            fairValueAt5thYearEPS: [
+            fairValueAt5thYearCF: [
                 `▶ Entry Price For ***${desiredReturn_rtn}%*** Return`,
-                fairValueAt5thYearEPS
+                fairValueAt5thYearCF
             ],
             fairValues: [
                 "Projected Fair Value",
@@ -144,10 +143,9 @@ function dcf_earning({
         };
 
     } catch (error) {
-        console.error('EPS calculation error:', error);
+        console.error('FCF calculation error:', error);
     }
 }
-
 
 /****************************************************************************************
  * Build Discord Embed
@@ -155,12 +153,12 @@ function dcf_earning({
 function buildValuationEmbed(embed_info) {
     const {
         currentPrice,
-        eps,
-        epsGrowthRate,
-        appropriatePE,
+        fcfShare,
+        fcfGrowthRate,
+        fcfYield,
         desiredReturn,
         returnFromCurrentPrice,
-        fairValueAt5thYearEPS,
+        fairValueAt5thYearCF,
         fairValues,
         ticker,
         longName,
@@ -177,25 +175,25 @@ function buildValuationEmbed(embed_info) {
         .setAuthor({
             name: `${ticker} | ${longName}`
         })
-        .setColor(0x07f747)
+        .setColor(0xff1cf4)
         .addFields(
-            { name: returnFromCurrentPrice[0], value: `>>> 🟩 **${returnFromCurrentPrice[1]}**`, inline: false },
-            { name: fairValueAt5thYearEPS[0], value: `>>> 🟩 **${fairValueAt5thYearEPS[1]}**`, inline: false },
+            { name: returnFromCurrentPrice[0], value: `>>> 🟪 **${returnFromCurrentPrice[1]}**`, inline: false },
+            { name: fairValueAt5thYearCF[0], value: `>>> 🟪 **${fairValueAt5thYearCF[1]}**`, inline: false },
         )
         .addFields({
             name: "▶ Input Parameter",
             value:
                 "```\n" +
                 `▪ Stock Price     : ${currentPrice[1]}\n` +
-                `▪ EPS             : ${eps[1]}\n` +
-                `▪ EPS Growth Rate : ${epsGrowthRate[1]}\n` +
-                `▪ P/E Ratio       : ${appropriatePE[1]}\n` +
+                `▪ FCF/Share       : ${fcfShare[1]}\n` +
+                `▪ FCF Growth Rate : ${fcfGrowthRate[1]}\n` +
+                `▪ FCF Yield       : ${fcfYield[1]}\n` +
                 `▪ Desired Return  : ${desiredReturn[1]}\n` +
                 "```\n",
             inline: false
         })
         .addFields({ name: '▶ Projected Fair Value', value: tableContent, inline: false })
-        .setFooter({ text: `🌱 DCF ・  Earnings-Based Valuation 🌱` })
+        .setFooter({ text: `🌱 DCF ・  FCF-Based Valuation 🌱` })
 }
 
 
