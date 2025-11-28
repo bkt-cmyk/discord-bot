@@ -116,17 +116,17 @@ function dcf_earning({
 
         returnFromCurrentPrice = (
             (Math.pow((lastProjectedPrice / currentPrice), (1 / forecastYear)) - 1) * 100
-        ).toFixed(2);
+        );
 
         fairValueAt5thYearEPS = fairValues[forecastYear - 1];
 
         return {
             currentPrice: ["Stock Price", currentPrice.toFixed(2)],
             eps: ["EPS", eps.toFixed(2)],
-            epsGrowthRate: ["EPS Growth Rate", `${epsGrowthRate_rtn}%`],
+            epsGrowthRate: ["EPS Growth Rate", `${epsGrowthRate_rtn.toFixed(2)}%`],
             appropriatePE: ["P/E Ratio", appropriatePE.toFixed(2)],
-            desiredReturn: ["Desired Return", `${desiredReturn_rtn}%`],
-            returnFromCurrentPrice: ["▶ Return From Current Price", `${returnFromCurrentPrice} %`],
+            desiredReturn: ["Desired Return", `${desiredReturn_rtn.toFixed(2)}%`],
+            returnFromCurrentPrice: ["▶ Return From Current Price", `${returnFromCurrentPrice.toFixed(2)}%`],
             fairValueAt5thYearEPS: [
                 `▶ Entry Price For ***${desiredReturn_rtn}%*** Return`,
                 fairValueAt5thYearEPS
@@ -177,10 +177,10 @@ function buildValuationEmbed(embed_info) {
         .setAuthor({
             name: `${ticker} | ${longName}`
         })
-        .setColor(0x07f747)
+        .setColor(0x2bf9fc)
         .addFields(
-            { name: returnFromCurrentPrice[0], value: `>>> 🟩 **${returnFromCurrentPrice[1]}**`, inline: false },
-            { name: fairValueAt5thYearEPS[0], value: `>>> 🟩 **${fairValueAt5thYearEPS[1]}**`, inline: false },
+            { name: returnFromCurrentPrice[0], value: `>>> 🟦 **${returnFromCurrentPrice[1]}**`, inline: false },
+            { name: fairValueAt5thYearEPS[0], value: `>>> 🟦 **${fairValueAt5thYearEPS[1]}**`, inline: false },
         )
         .addFields({
             name: "▶ Input Parameter",

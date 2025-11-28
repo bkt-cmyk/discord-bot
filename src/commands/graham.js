@@ -114,7 +114,7 @@ function buildValuationEmbed(embed_info) {
             name: `${ticker} | ${longName}`
         })
         .setColor(0xfff81f)
-        .setTitle(GrahamIntrinsicValue !== 'NULL' ? `>>> **${GrahamIntrinsicValue}**` : 'NULL')
+        .setTitle(GrahamIntrinsicValue !== 'NULL' ? `>>> 🟨 **${GrahamIntrinsicValue}**` : 'NULL')
         .addFields({
             name: "▶ Input Parameter",
             value:

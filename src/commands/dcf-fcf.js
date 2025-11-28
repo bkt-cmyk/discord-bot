@@ -90,6 +90,7 @@ function dcf_fcf({
 
     try {
         const fcfGrowthRate_rtn = fcfGrowthRate;
+        const fcfYield_rtn = fcfYield;
         const desiredReturn_rtn = desiredReturn;
 
         fcfGrowthRate = fcfGrowthRate >= 0 ? fcfGrowthRate / 100 : 0;
@@ -115,17 +116,17 @@ function dcf_fcf({
         }
 
         // Return from current price
-        returnFromCurrentPrice = ((Math.pow((lastProjectedPrice / currentPrice), (1 / forecastYear)) - 1) * 100).toFixed(2);
+        returnFromCurrentPrice = ((Math.pow((lastProjectedPrice / currentPrice), (1 / forecastYear)) - 1) * 100);
         fairValueAt5thYearCF = (fairValues[forecastYear - 1]);
 
 
         return {
             currentPrice: ["Stock Price", currentPrice.toFixed(2)],
             fcfShare: ["FCF/Share", fcfShare.toFixed(2)],
-            fcfGrowthRate: ["FCF Growth Rate", `${fcfGrowthRate_rtn}%`],
-            fcfYield: ["FCF Yield", `${fcfYield.toFixed(2)}%`],
-            desiredReturn: ["Desired Return", `${desiredReturn_rtn}%`],
-            returnFromCurrentPrice: ["▶ Return From Current Price", `${returnFromCurrentPrice} %`],
+            fcfGrowthRate: ["FCF Growth Rate", `${fcfGrowthRate_rtn.toFixed(2)}%`],
+            fcfYield: ["FCF Yield", `${fcfYield_rtn.toFixed(2)}%`],
+            desiredReturn: ["Desired Return", `${desiredReturn_rtn.toFixed(2)}%`],
+            returnFromCurrentPrice: ["▶ Return From Current Price", `${returnFromCurrentPrice.toFixed(2)}%`],
             fairValueAt5thYearCF: [
                 `▶ Entry Price For ***${desiredReturn_rtn}%*** Return`,
                 fairValueAt5thYearCF
