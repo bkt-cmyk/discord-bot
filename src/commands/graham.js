@@ -50,9 +50,9 @@ module.exports = {
             info.currentPrice = Number(stockInfo.data[0].regularMarketPrice);
             info.ticker = stockInfo.data[0].ticker;
             info.longName = stockInfo.data[0].longName;
-            info.eps = eps;
-            info.epsGrowthRate = epsGrowthRate;
-            info.bondYield = bondYield;
+            info.eps = Number(eps).toFixed(2);
+            info.epsGrowthRate = Number(epsGrowthRate).toFixed(2);
+            info.bondYield = Number(bondYield).toFixed(2);
 
             const embed = buildValuationEmbed(info);
 
@@ -119,7 +119,7 @@ function buildValuationEmbed(embed_info) {
             name: "▶ Input Parameter",
             value:
                 "```\n" +
-                `▪ Stock Price     : ${currentPrice}\n` +
+                `▪ Stock Price     : ${currentPrice.toFixed(2)}\n` +
                 `▪ EPS             : ${eps}\n` +
                 `▪ EPS Growth Rate : ${epsGrowthRate}%\n` +
                 `▪ Bond Yield      : ${bondYield}%\n` +
