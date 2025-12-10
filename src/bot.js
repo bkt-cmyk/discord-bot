@@ -4,7 +4,7 @@
 require('dotenv').config();
 
 // 🔁 Run deploy-commands.js (optional)
-require('./server');
+// require('./server');
 
 // ⚡ Import necessary Discord.js classes
 const { Client, Collection, GatewayIntentBits } = require('discord.js');
