@@ -181,10 +181,10 @@ module.exports = {
             // Prepare
             const dataInfo = await response.json();
             let embedsToSend = [errorEmbed]; // default
-            
+
             // Check error
-            const isEmpty = dataInfo.ticker===undefined;
-            
+            const isEmpty = dataInfo.ticker === undefined;
+
             if (!isEmpty) {
                 embedsToSend = createEmbed({
                     symbol: dataInfo.ticker,
@@ -199,14 +199,18 @@ module.exports = {
                     note: dataInfo.note,
                     interval: interval
                 });
+                await interaction.editReply({ embeds: embedsToSend });
             }
-
-            await interaction.editReply({ embeds: embedsToSend });
+            else {
+                // await interaction.editReply({ embeds: embedsToSend, ephemeral: true });
+                await interaction.editReply({ embeds: embedsToSend });
+            }
 
         } catch (error) {
             // console.dir(error, { depth: null, colors: true });
 
             // Send fallback error
+            // await interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
             await interaction.editReply({ embeds: [errorEmbed] });
         }
     }
