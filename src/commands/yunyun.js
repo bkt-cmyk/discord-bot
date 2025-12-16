@@ -13,7 +13,7 @@ module.exports = {
      */
     data: new SlashCommandBuilder()
         .setName('yunyun')
-        .setDescription('🤩 Personal Protfolio of Yunyun'),
+        .setDescription('🤩 Personal Portfolio of Yunyun'),
 
     /**
      * Executes the slash command, creating and displaying the modal to the user.
