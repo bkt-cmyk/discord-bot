@@ -108,11 +108,11 @@ function createEmbed({
             {
                 name: '▶ *Support Levels*',
                 value: supportLevels.length > 0
-                    ? "```\n" +
+                    ? "```\n" + `${suggestion}\n\n` +
                     supportLevels.map((v, i) => {
                         const colors = ["🟩", "🟨", "🟧", "🟥"];
                         const color = colors[i % colors.length];
-                        return `${color} ไม้ที่ ${i + 1}: ${v}`;
+                        return `${color} ไม้ที่ ${i + 1} : ${v}`;
                     }).join("\n") +
                     "\n```"
                     : "```No data```",
@@ -121,11 +121,7 @@ function createEmbed({
             {
                 name: '▶ *PE*',
                 value: pe_cur.length > 0 && pe_avg.length > 0 && pe_sts.length > 0
-                    ? `\`\`\`🎯${pe_sts}\n\n${[["PE Current", pe_cur], ["PE Average", pe_avg]]
-                        .map(([label, val]) =>
-                            label.padEnd(11) + ": " + val)
-                        .join("\n")}\`\`\``
-                    : "```No data```",
+                    ? `\`\`\`${pe_sts}\n\nPE Current : ${pe_cur}\nPE Average : ${pe_avg}\n\`\`\`` : '```No data```',
                 inline: false
             },
             {
