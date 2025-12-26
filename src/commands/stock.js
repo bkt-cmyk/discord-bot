@@ -82,6 +82,9 @@ function createEmbed({
     currency = '',
     suggestion = '',
     supportLevels = [],
+    pe_cur = [],
+    pe_avg = [],
+    pe_sts = [],
     smaDay = [],
     smaWeek = [],
     note = [],
@@ -112,6 +115,16 @@ function createEmbed({
                         return `${color} ไม้ที่ ${i + 1}: ${v}`;
                     }).join("\n") +
                     "\n```"
+                    : "```No data```",
+                inline: false
+            },
+            {
+                name: '▶ *PE*',
+                value: pe_cur.length > 0 && pe_avg.length > 0 && pe_sts.length > 0
+                    ? `\`\`\`🎯${pe_sts}\n\n${[["PE Current", pe_cur], ["PE Average", pe_avg]]
+                        .map(([label, val]) =>
+                            label.padEnd(11) + ": " + val)
+                        .join("\n")}\`\`\``
                     : "```No data```",
                 inline: false
             },
@@ -194,6 +207,9 @@ module.exports = {
                     currency: dataInfo.currency,
                     suggestion: dataInfo.suggestion,
                     supportLevels: dataInfo.supportLevels,
+                    pe_cur: dataInfo.pe_cur,
+                    pe_avg: dataInfo.pe_avg,
+                    pe_sts: dataInfo.pe_sts,
                     smaDay: dataInfo.smaDay,
                     smaWeek: dataInfo.smaWeek,
                     note: dataInfo.note,
