@@ -101,7 +101,7 @@ function createEmbed({
             name: `${symbol} | ${longName}`,
             iconURL: thumbnailUrl,
         })
-        .setTitle(symbol !== 'NULL' ? `>>> **${regularMarketPrice} ${currency}**` : 'NULL')
+        .setTitle(symbol !== 'NULL' ? `>>> **${regularMarketPrice}**` : 'NULL')
         .setColor(0x57f287)
         .setImage(`attachment://${symbol}-$${interval}-chart.png`)
         .addFields(
