@@ -129,20 +129,6 @@ function createEmbed({
                 inline: false
             },
             {
-                name: '▶ *EMA (TFD)*',
-                value: emaDay.length > 0
-                    ? `\`\`\`\n${emaDay.map((v, i) => `${[50, 100, 200][i]}D`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
-                    : '```No data```',
-                inline: false
-            },
-            {
-                name: '▶ *EMA (TFW)*',
-                value: emaWeek.length > 0
-                    ? `\`\`\`\n${emaWeek.map((v, i) => `${[50, 100][i]}W`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
-                    : '```No data```',
-                inline: false
-            },
-            {
                 name: '▶ *Notes*',
                 value: note.length > 0 ? `\`\`\`\n${note[0]}\n\`\`\`` : '```No data```',
                 inline: false
@@ -225,7 +211,7 @@ module.exports = {
             }
 
         } catch (error) {
-            // console.dir(error, { depth: null, colors: true });
+            console.dir(error, { depth: null, colors: true });
 
             // Send fallback error
             // await interaction.editReply({ embeds: [errorEmbed], ephemeral: true });
