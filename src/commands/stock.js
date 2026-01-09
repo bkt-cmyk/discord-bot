@@ -87,6 +87,8 @@ function createEmbed({
     pe_sts = [],
     smaDay = [],
     smaWeek = [],
+    emaDay = [],
+    emaWeek = [],
     note = [],
     interval = []
 }) {
@@ -94,6 +96,8 @@ function createEmbed({
     supportLevels = Array.isArray(supportLevels) ? supportLevels : [];
     smaDay = Array.isArray(smaDay) ? smaDay : [];
     smaWeek = Array.isArray(smaWeek) ? smaWeek : [];
+    emaDay = Array.isArray(emaDay) ? emaDay : [];
+    emaWeek = Array.isArray(emaWeek) ? emaWeek : [];
     note = Array.isArray(note) ? note : [];
 
     const embed = new EmbedBuilder()
@@ -125,16 +129,16 @@ function createEmbed({
                 inline: false
             },
             {
-                name: '▶ *SMA (TFD)*',
-                value: smaDay.length > 0
-                    ? `\`\`\`\n${smaDay.map((v, i) => `${[50, 100, 200][i]}D`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
+                name: '▶ *EMA (TFD)*',
+                value: emaDay.length > 0
+                    ? `\`\`\`\n${emaDay.map((v, i) => `${[50, 100, 200][i]}D`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
                     : '```No data```',
                 inline: false
             },
             {
-                name: '▶ *SMA (TFW)*',
-                value: smaWeek.length > 0
-                    ? `\`\`\`\n${smaWeek.map((v, i) => `${[50, 100][i]}W`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
+                name: '▶ *EMA (TFW)*',
+                value: emaWeek.length > 0
+                    ? `\`\`\`\n${emaWeek.map((v, i) => `${[50, 100][i]}W`.padEnd(6) + `: ${v}`).join('\n')}\n\`\`\``
                     : '```No data```',
                 inline: false
             },
@@ -208,6 +212,8 @@ module.exports = {
                     pe_sts: dataInfo.pe_sts,
                     smaDay: dataInfo.smaDay,
                     smaWeek: dataInfo.smaWeek,
+                    emaDay: dataInfo.emaDay,
+                    emaWeek: dataInfo.emaWeek,
                     note: dataInfo.note,
                     interval: interval
                 });
