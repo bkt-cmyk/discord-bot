@@ -74,24 +74,35 @@ async function fetchWithTimeout(url, options = {}, timeout = 5000, retries = 3) 
 /****************************************************************************************
  * 🎨 createEmbed(data)
  ****************************************************************************************/
-function createEmbed({
-    symbol = '',
-    longName = '',
-    thumbnailUrl = null,
-    regularMarketPrice = '',
-    currency = '',
-    suggestion = '',
-    supportLevels = [],
-    pe_cur = [],
-    pe_avg = [],
-    pe_sts = [],
-    smaDay = [],
-    smaWeek = [],
-    emaDay = [],
-    emaWeek = [],
-    note = [],
-    interval = []
-}) {
+function createEmbed(dataInfo) {
+
+    let symbol = dataInfo.ticker;
+    let longName = dataInfo.longName;
+
+    let thumbnailUrl = dataInfo.thumbnailUrl;
+
+    let regularMarketPrice = dataInfo.regularMarketPrice;
+    let suggestion = dataInfo.suggestion;
+    let supportLevels = dataInfo.supportLevels;
+    let note = dataInfo.note;
+
+    let pe_cur = dataInfo.pe_cur;
+    let pe_avg = dataInfo.pe_avg;
+    let pe_sts = dataInfo.pe_sts;
+
+    let smaDay = dataInfo.smaDay;
+    let smaWeek = dataInfo.smaWeek;
+
+    let emaDay = dataInfo.emaDay;
+    let emaWeek = dataInfo.emaWeek;
+
+    let rsiDay = dataInfo.rsiDay;
+    let rsiWeek = dataInfo.rsiWeek;
+
+    let earningsTime = dataInfo.earningsTime;
+    let lastEarningsDate = dataInfo.lastEarningsDate;
+    let nextEarningsDate = dataInfo.nextEarningsDate;
+
     // Ensure arrays
     supportLevels = Array.isArray(supportLevels) ? supportLevels : [];
     smaDay = Array.isArray(smaDay) ? smaDay : [];
@@ -107,30 +118,65 @@ function createEmbed({
         })
         .setTitle(symbol !== 'NULL' ? `>>> **${regularMarketPrice}**` : 'NULL')
         .setColor(0x57f287)
-        .setImage(`attachment://${symbol}-$${interval}-chart.png`)
+        // .setThumbnail(thumbnailUrl)
+        // .setImage(thumbnailUrl)
         .addFields(
             {
-                name: '▶ *Support Levels*',
+                name: '▶ ***Support Levels***',
                 value: supportLevels.length > 0
-                    ? "```\n" + `${suggestion}\n\n` +
+                    ? "```" + `${suggestion}\n\n` +
                     supportLevels.map((v, i) => {
                         const colors = ["🟩", "🟨", "🟧", "🟥"];
                         const color = colors[i % colors.length];
                         return `${color} ไม้ที่ ${i + 1} : ${v}`;
                     }).join("\n") +
-                    "\n```"
+                    "```"
                     : "```No data```",
                 inline: false
             },
             {
-                name: '▶ *PE*',
-                value: pe_cur.length > 0 && pe_avg.length > 0 && pe_sts.length > 0
-                    ? `\`\`\`${pe_sts}\n\nPE Current : ${pe_cur}\nPE Average : ${pe_avg}\n\`\`\`` : '```No data```',
+                name: '▶ ***Earnings Date***',
+                value: earningsTime.length > 0 && lastEarningsDate.length && nextEarningsDate.length
+                    ?
+                    `\`\`\`` +
+                    `Next Earnings : ${nextEarningsDate}\n` +
+                    `Last Earnings : ${lastEarningsDate}\n` +
+                    `(${earningsTime})\n` +
+                    `\`\`\``
+                    : '```No data```',
                 inline: false
             },
             {
-                name: '▶ *Notes*',
-                value: note.length > 0 ? `\`\`\`\n${note[0]}\n\`\`\`` : '```No data```',
+                name: '▶ ***PE (Price to Earnings Ratio)***',
+                value: pe_cur.length > 0 && pe_avg.length > 0 && pe_sts.length > 0
+                    ?
+                    `\`\`\`` +
+                    `${pe_sts}\n\n` +
+                    `PE Current : ${pe_cur}\n` +
+                    `PE Average : ${pe_avg}\n` +
+                    `\`\`\``
+                    : '```No data```',
+                inline: false
+            },
+            {
+                name: '▶ ***RSI (Relative Strength Index)***',
+                value: rsiDay.length > 0 && rsiWeek.length
+                    ?
+                    `\`\`\`` +
+                    `RSI(14D) : ${rsiDay}\n` +
+                    `RSI(14W) : ${rsiWeek}\n` +
+                    `\`\`\``
+                    : '```No data```',
+                inline: false
+            },
+            {
+                name: '▶ ***Notes***',
+                value: note.length > 0
+                    ?
+                    `\`\`\`` +
+                    `${note[0]}` +
+                    `\`\`\``
+                    : '```No data```',
                 inline: false
             }
         )
@@ -185,24 +231,7 @@ module.exports = {
             const isEmpty = dataInfo.ticker === undefined;
 
             if (!isEmpty) {
-                embedsToSend = createEmbed({
-                    symbol: dataInfo.ticker,
-                    longName: dataInfo.longName,
-                    thumbnailUrl: dataInfo.thumbnailUrl,
-                    regularMarketPrice: dataInfo.regularMarketPrice,
-                    currency: dataInfo.currency,
-                    suggestion: dataInfo.suggestion,
-                    supportLevels: dataInfo.supportLevels,
-                    pe_cur: dataInfo.pe_cur,
-                    pe_avg: dataInfo.pe_avg,
-                    pe_sts: dataInfo.pe_sts,
-                    smaDay: dataInfo.smaDay,
-                    smaWeek: dataInfo.smaWeek,
-                    emaDay: dataInfo.emaDay,
-                    emaWeek: dataInfo.emaWeek,
-                    note: dataInfo.note,
-                    interval: interval
-                });
+                embedsToSend = createEmbed(dataInfo);
                 await interaction.editReply({ embeds: embedsToSend });
             }
             else {
