@@ -90,25 +90,15 @@ function createEmbed(dataInfo) {
     let pe_avg = dataInfo.pe_avg;
     let pe_sts = dataInfo.pe_sts;
 
-    let smaDay = dataInfo.smaDay;
-    let smaWeek = dataInfo.smaWeek;
-
-    let emaDay = dataInfo.emaDay;
-    let emaWeek = dataInfo.emaWeek;
-
     let rsiDay = dataInfo.rsiDay;
     let rsiWeek = dataInfo.rsiWeek;
 
     let earningsTime = dataInfo.earningsTime;
-    let lastEarningsDate = dataInfo.lastEarningsDate;
     let nextEarningsDate = dataInfo.nextEarningsDate;
+    let date2nextEarning = dataInfo.date2nextEarning;
 
     // Ensure arrays
     supportLevels = Array.isArray(supportLevels) ? supportLevels : [];
-    smaDay = Array.isArray(smaDay) ? smaDay : [];
-    smaWeek = Array.isArray(smaWeek) ? smaWeek : [];
-    emaDay = Array.isArray(emaDay) ? emaDay : [];
-    emaWeek = Array.isArray(emaWeek) ? emaWeek : [];
     note = Array.isArray(note) ? note : [];
 
     const embed = new EmbedBuilder()
@@ -135,36 +125,36 @@ function createEmbed(dataInfo) {
                 inline: false
             },
             {
-                name: '▶ ***Earnings Date***',
-                value: earningsTime.length > 0 && lastEarningsDate.length && nextEarningsDate.length
-                    ?
-                    `\`\`\`` +
-                    `Next Earnings : ${nextEarningsDate}\n` +
-                    `Last Earnings : ${lastEarningsDate}\n` +
-                    `(${earningsTime})\n` +
-                    `\`\`\``
-                    : '```No data```',
-                inline: false
-            },
-            {
                 name: '▶ ***PE (Price to Earnings Ratio)***',
                 value: pe_cur.length > 0 && pe_avg.length > 0 && pe_sts.length > 0
-                    ?
-                    `\`\`\`` +
-                    `${pe_sts}\n\n` +
-                    `PE Current : ${pe_cur}\n` +
-                    `PE Average : ${pe_avg}\n` +
-                    `\`\`\``
-                    : '```No data```',
+                ?
+                `\`\`\`` +
+                `${pe_sts}\n\n` +
+                `PE Current : ${pe_cur}\n` +
+                `PE Average : ${pe_avg}\n` +
+                `\`\`\``
+                : '```No data```',
                 inline: false
             },
             {
                 name: '▶ ***RSI (Relative Strength Index)***',
                 value: rsiDay.length > 0 && rsiWeek.length
+                ?
+                `\`\`\`` +
+                `RSI(14D) : ${rsiDay}\n` +
+                `RSI(14W) : ${rsiWeek}\n` +
+                `\`\`\``
+                : '```No data```',
+                inline: false
+            },
+            {
+                name: '▶ ***Earnings Date***',
+                value: earningsTime.length > 0 && nextEarningsDate.length
                     ?
                     `\`\`\`` +
-                    `RSI(14D) : ${rsiDay}\n` +
-                    `RSI(14W) : ${rsiWeek}\n` +
+                    `Next Earnings : ${nextEarningsDate}\n` +
+                    `              : ${earningsTime}\n` +
+                    `              : ${date2nextEarning}\n` +
                     `\`\`\``
                     : '```No data```',
                 inline: false
