@@ -116,9 +116,9 @@ function createEmbed(dataInfo) {
                 value: supportLevels.length > 0
                     ? "```" + `${suggestion}\n\n` +
                     supportLevels.map((v, i) => {
-                        const colors = ["🟩", "🟨", "🟧", "🟥"];
+                        const colors = ["🟢", "🟡", "🟠", "🔴"];
                         const color = colors[i % colors.length];
-                        return `${color} ไม้ที่ ${i + 1} : ${v}`;
+                        return `${color} ไม้ที่ ${i + 1}: ${v}`;
                     }).join("\n") +
                     "```"
                     : "```No data```",
@@ -130,8 +130,8 @@ function createEmbed(dataInfo) {
                 ?
                 `\`\`\`` +
                 `${pe_sts}\n\n` +
-                `PE Current : ${pe_cur}\n` +
-                `PE Average : ${pe_avg}\n` +
+                `Current: ${pe_cur}\n` +
+                `Average: ${pe_avg}\n` +
                 `\`\`\``
                 : '```No data```',
                 inline: false
@@ -141,8 +141,8 @@ function createEmbed(dataInfo) {
                 value: rsiDay.length > 0 && rsiWeek.length
                 ?
                 `\`\`\`` +
-                `RSI(14D) : ${rsiDay}\n` +
-                `RSI(14W) : ${rsiWeek}\n` +
+                `RSI(14D): ${rsiDay}\n` +
+                `RSI(14W): ${rsiWeek}\n` +
                 `\`\`\``
                 : '```No data```',
                 inline: false
@@ -152,9 +152,8 @@ function createEmbed(dataInfo) {
                 value: earningsTime.length > 0 && nextEarningsDate.length
                     ?
                     `\`\`\`` +
-                    `Next Earnings : ${nextEarningsDate}\n` +
-                    `              : ${earningsTime}\n` +
-                    `              : ${date2nextEarning}\n` +
+                    `${nextEarningsDate} (${date2nextEarning})\n` +
+                    `${earningsTime}\n` +
                     `\`\`\``
                     : '```No data```',
                 inline: false
